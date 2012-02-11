@@ -1,0 +1,25 @@
+{
+  "name": "Niconico live continuous watch extentions",
+  "version": "1.0.0",
+  "description": "ニコニコ生放送を連続視聴可能にするページアクションを追加する拡張です。アクションをクリックすると現在最も視聴者の多い一般カテゴリの生放送を見続けます。",
+  "background_page": "background.html",
+  "page_action" :
+  {
+    "default_icon" : "icon_on.png",
+    "default_title" : "クリックすると連続視聴を開始します。"
+  },
+  "content_scripts": [
+  {
+    "matches": ["http://live.nicovideo.jp/*"],
+    "js": ["jquery-1.7.1.min.js", "nicodara.js"]
+  }
+  ],
+  "permissions" : [
+      "tabs"
+      ],
+  "icons" : {
+      "48" : "icon-48.png",
+      "128" : "icon-128.png"
+    },
+  "content_security_policy": "default-src 'unsafe-inline'"
+}

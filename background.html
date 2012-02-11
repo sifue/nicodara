@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <script>
+      // Background page
+      function checkForValidUrl(tabId, changeInfo, tab) {
+        if (tab.url.indexOf('http://live.nicovideo.jp') == 0) {
+          chrome.pageAction.show(tabId);
+        }
+      };
+
+      // Listen for any changes to the URL of any tab.
+      chrome.tabs.onUpdated.addListener(checkForValidUrl);
+
+      var lastTabId = 0;
+      var tab_clicks = {};
+
+      chrome.tabs.onSelectionChanged.addListener(function(tabId) {
+        lastTabId = tabId;
+        chrome.pageAction.show(lastTabId);
+      });
+
+      chrome.tabs.getSelected(null, function(tab) {
+        lastTabId = tab.id;
+        chrome.pageAction.show(lastTabId);
+      });
+
+      // Called when the user clicks on the page action.
+      chrome.pageAction.onClicked.addListener(function(tab) {
+
+      });
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
