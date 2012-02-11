@@ -9,8 +9,6 @@
  */
 (function()
  {
-   console.log('content script loaded.');
-
    // parse id
    var url = document.URL;
    url.match(/^http:\/\/live\.nicovideo\.jp\/watch\/([a-z]+[0-9]+)($|\?.*$)/);
@@ -20,27 +18,35 @@
    // get video endTime
    var statusUrl = 'http://live.nicovideo.jp/api/getplayerstatus';
    $.get(statusUrl, {v:id}, function(data){
+     // console.dir(data);
      var isLiveWatch = canLiveWatch(data);
+     
+     var rssUrl = 'http://live.nicovideo.jp/rss';
+     $.get(rssUrl, function(rss){
+       // console.dir(rss);
+       var items = rss.firstChild.childNodes[1].childNodes;
+       //$.each(items, function(i, item){
+         
+       //}
+
+
+
+     });
+
+
    });
 
    /**
     * APIの戻り値のxmlを元に、生放送で現在見られるかを返す
-    * @param {Document} http://live.nicovideo.jp/api/getplayerstatus の結果のXML
+    * @param {Document} http://live.nicovideo.jp/api/getplayerstatus 
+    *                   の結果のXML
     * @return {boolean} 生放送で見られるかどうかを返す
     */
    var canLiveWatch = function(data){
-     var streamAttrs = data.firstChild.firstChild.childNodes
-       var endTimeStr = null;
-     $.each(streamAttrs, function(i, val){
-       if(val.nodeName === "end_time"){
-         endTimeStr = val.firstChild.nodeValue;
-       }
-     });
-
-     console.dir(endTimeStr);
-     var endTime = endTimeStr === null ? null : new Date(parseInt(endTimeStr, 10) * 1000);
-     console.dir(endTime);
-
+     var endTimeElem = $(data).find('end_time');
+     var endTime = endTimeElem === null 
+       ? null 
+       : new Date(parseInt(endTimeElem.text(), 10) * 1000);
      var nowTime = new Date();
      if(endTime === null 
          || endTime.getTime() < nowTime.getTime()){
