@@ -45,12 +45,14 @@
      var rssURL = 'http://live.nicovideo.jp/rss';
      $.get(rssURL, function(rss){
 
-       var items = $(rss).find("item");
-       var liveItems = items.filter(function(index){
+       var items = $(rss).find("item").filter(function(index){
          var text =  $(this).text();
          // filter by NG words
          if(text.indexOf('ネットチケットが必要') > 0) return false;
+         return true;
+       });
 
+       var liveItems = items.filter(function(index){
          var startTimeStr = $(this).find('start_time').text();
          var startTime = new Date(startTimeStr);
          var diffMsecFromNow =  new Date().getTime() - startTime.getTime();
