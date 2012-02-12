@@ -2,22 +2,34 @@
   <head>
     <script src="jquery-1.7.1.min.js"></script>
     <script>
-      // Background page
+      // Activation status of this extension. 
+      var isActive = true;
+
+      /**
+      * Update icon of page action
+      * @param {string} tab id
+      */
+      var updateIcon = function(id){
+        if(isActive){
+          chrome.pageAction.setIcon({tabId : id, path : "icon_on.png"});
+          }else{
+          chrome.pageAction.setIcon({tabId : id, path :"icon_off.png"});
+        }
+      }
+
       function checkForValidUrl(tabId, changeInfo, tab) {
         if (tab.url.indexOf('http://live.nicovideo.jp') == 0) {
           chrome.pageAction.show(tabId);
         }
       };
-
       // Listen for any changes to the URL of any tab.
       chrome.tabs.onUpdated.addListener(checkForValidUrl);
 
       var lastTabId = 0;
-      var tab_clicks = {};
-
       chrome.tabs.onSelectionChanged.addListener(function(tabId) {
         lastTabId = tabId;
         chrome.pageAction.show(lastTabId);
+        updateIcon(tabId);
       });
 
       chrome.tabs.getSelected(null, function(tab) {
@@ -25,10 +37,19 @@
         chrome.pageAction.show(lastTabId);
       });
 
-      // Called when the user clicks on the page action.
       chrome.pageAction.onClicked.addListener(function(tab) {
-
+        isActive = !isActive;
+        updateIcon(tab.id);
       });
+
+      // Message listener for content script
+      chrome.extension.onRequest.addListener(
+      function(request, sender, sendResponse) {
+        if(request.field === 'isActive'){
+          sendResponse({isActive: isActive});
+        }
+      }
+      );
 
     </script>
   </head>
