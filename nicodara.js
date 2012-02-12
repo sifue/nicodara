@@ -49,6 +49,7 @@
          var text =  $(this).text();
          // filter by NG words
          if(text.indexOf('ネットチケットが必要') > 0) return false;
+         if(text.indexOf('この番組は有料') > 0) return false;
          return true;
        });
 
