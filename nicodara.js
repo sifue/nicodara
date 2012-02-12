@@ -9,32 +9,16 @@
  */
 (function()
  {
-   // parse id
-   var url = document.URL;
-   url.match(/^http:\/\/live\.nicovideo\.jp\/watch\/([a-z]+[0-9]+)($|\?.*$)/);
-   var id = RegExp.$1;
-   console.log(id);
-
-   // get video endTime
-   var statusUrl = 'http://live.nicovideo.jp/api/getplayerstatus';
-   $.get(statusUrl, {v:id}, function(data){
-     // console.dir(data);
-     var isLiveWatch = canLiveWatch(data);
-     
-     var rssUrl = 'http://live.nicovideo.jp/rss';
-     $.get(rssUrl, function(rss){
-       // console.dir(rss);
-       var items = rss.firstChild.childNodes[1].childNodes;
-       //$.each(items, function(i, item){
-         
-       //}
-
-
-
-     });
-
-
-   });
+   /**
+    * ニコニコ生放送のURLからIDを取得する
+    * * @param {string} ニコニコ生放送のURL
+    * * @return {string} ニコニコ生放送のID
+    */
+   var getId = function(url){
+     url.match(/^http:\/\/live\.nicovideo\.jp\/watch\/([a-z]+[0-9]+)($|\?.*$)/);
+     var id = RegExp.$1;
+     return id;
+   };
 
    /**
     * APIの戻り値のxmlを元に、生放送で現在見られるかを返す
@@ -43,19 +27,56 @@
     * @return {boolean} 生放送で見られるかどうかを返す
     */
    var canLiveWatch = function(data){
+     //console.dir(data);
      var endTimeElem = $(data).find('end_time');
-     var endTime = endTimeElem === null 
+     //console.dir(endTimeElem);
+     var endTime = endTimeElem.length === 0 
        ? null 
        : new Date(parseInt(endTimeElem.text(), 10) * 1000);
      var nowTime = new Date();
      if(endTime === null 
          || endTime.getTime() < nowTime.getTime()){
-           alert("現在生で番組見れないよ");
            return false;
          }else{
-           alert("現在生で番組見れるよ");
            return true;
          }
+   };
+
+   /////// start main
+
+   var url = document.URL;
+   var id = getId(url);
+
+   var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
+   $.get(statusURL, {v:id}, function(data){
+     var isLiveWatch = canLiveWatch(data);
+     console.log('isLiveWatch:' + isLiveWatch);
+     if(!isLiveWatch) showNextVideo();
+   });
+
+   /**
+    * 次のビデオを表示する
+    */
+   var showNextVideo = function(){
+     var rssURL = 'http://live.nicovideo.jp/rss';
+     $.get(rssURL, function(rss){
+
+       var items = $(rss).find("item");
+       var liveItems = items.filter(function(index){
+         var startTimeStr = $(this).find('start_time').text();
+         var startTime = new Date(startTimeStr);
+         var diffMsecFromNow =  new Date().getTime() - startTime.getTime();
+         // console.log('diffMsecFromNow:' + diffMsecFromNow);
+         // 始まって60分以内のものだけ抽出
+         return 0 < diffMsecFromNow && diffMsecFromNow < (60 * 60 * 1000);
+       });
+
+       console.log('liveItems.length:'+liveItems.length);
+       if(liveItems.length != 0){
+         var nextURL = liveItems.find('link').first().text();
+         console.log(nextURL);
+       }
+     });
    };
 
  })();
