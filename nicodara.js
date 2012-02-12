@@ -52,25 +52,36 @@
          var diffMsecFromNow =  new Date().getTime() - startTime.getTime();
          // console.log('diffMsecFromNow:' + diffMsecFromNow);
          // filter by start time.
-         return 0 < diffMsecFromNow && diffMsecFromNow < (60 * 60 * 1000);
+         return 0 < diffMsecFromNow && diffMsecFromNow < (30 * 60 * 1000);
        });
 
-       console.log('liveItems.length:'+liveItems.length);
+       // console.log('liveItems.length:'+liveItems.length);
        var nextURL = null;
        if(liveItems.length != 0){ 
          nextURL = liveItems.find('link').first().text();
+       }else{
+         nextURL = items.find('link').first().text();
        }
+       // console.log('nextURL:'+ nextURL);
+       if(nextURL == null || nextURL == document.URL) return;
 
-       console.log('nextURL:'+ nextURL);
-       if(nextURL == null) return;
-
-       return; // TODO clear this code.
        $('body').animate({"opacity":0}, 1000, function(){
          location.href = nextURL;
        });
 
      });
    };
+   
+   /**
+    * Show flash player of niconico live by scroll.
+    */
+   var showFlashPlayer = function(){
+     var targetOffset = $('#flvplayer_container').offset().top;
+     targetOffset = targetOffset - 30; // height of menu bar
+     $('html,body').animate({scrollTop: targetOffset}, 1000);
+   }; 
+
+   var isFirstObserve = true;
 
    /**
     * observe live video status.
@@ -79,16 +90,20 @@
      // get status of activation from background.html
      chrome.extension.sendRequest({field: 'isActive'}, function(response) {
        var isActive =  response.isActive;
-       console.log('isActive:' + isActive);
-       var url = document.URL;
-       var id = getId(url);
+       // console.log('isActive:' + isActive); 
+       var id = getId(document.URL);
 
        var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
        $.get(statusURL, {v:id}, function(data){
          var isLiveWatch = canLiveWatch(data);
-         console.log('isLiveWatch:' + isLiveWatch);
+         // console.log('isLiveWatch:' + isLiveWatch);
          if(!isLiveWatch && isActive) {  
            showNextVideo();
+         }
+         // first observe
+         if(isFirstObserve && isActive){
+           showFlashPlayer();
+           isFirstObserve = false;
          }
          setTimeout(observe,5000); // wait and retry
        });

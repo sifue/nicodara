@@ -3,7 +3,7 @@
     <script src="jquery-1.7.1.min.js"></script>
     <script>
       // Activation status of this extension. 
-      var isActive = true;
+      var isActive = false;
 
       /**
       * Update icon of page action
@@ -20,22 +20,11 @@
       function checkForValidUrl(tabId, changeInfo, tab) {
         if (tab.url.indexOf('http://live.nicovideo.jp') == 0) {
           chrome.pageAction.show(tabId);
+          updateIcon(tabId);
         }
       };
       // Listen for any changes to the URL of any tab.
       chrome.tabs.onUpdated.addListener(checkForValidUrl);
-
-      var lastTabId = 0;
-      chrome.tabs.onSelectionChanged.addListener(function(tabId) {
-        lastTabId = tabId;
-        chrome.pageAction.show(lastTabId);
-        updateIcon(tabId);
-      });
-
-      chrome.tabs.getSelected(null, function(tab) {
-        lastTabId = tab.id;
-        chrome.pageAction.show(lastTabId);
-      });
 
       chrome.pageAction.onClicked.addListener(function(tab) {
         isActive = !isActive;
@@ -50,7 +39,6 @@
         }
       }
       );
-
     </script>
   </head>
   <body>
