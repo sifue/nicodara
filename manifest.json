@@ -1,12 +1,12 @@
 {
   "name": "Niconico live continuous watch extentions",
-  "version": "1.0.0",
-  "description": "ニコニコ生放送の公式番組を連続視聴可能にする拡張です。URLの右にでるアイコンで機能のONとOFFを切り替えできます。現在は、番組を開始して30分以内の他の番組がみつかればその番組を、そうでない場合は配信されているRSSのトップの番組に移動します。",
+  "version": "0.1.0",
+  "description": "ネットチケットが不要のニコニコ生放送の公式番組を連続視聴可能にする拡張です。URLの右にでるアイコンで機能のONとOFFを切り替えできます。番組を開始して60分以内の他の番組がみつかればその番組を、そうでない場合は配信されているRSSのトップの番組に移動します。",
   "background_page": "background.html",
   "page_action" :
   {
     "default_icon" : "icon_off.png",
-    "default_title" : "ニコニコ生放送の公式放送の連続視聴をします。"
+    "default_title" : "ニコニコ生放送の公式放送の連続視聴開始します。(テレビアイコンの中が黒い時はOFF、白い時はON)"
   },
   "content_scripts": [
   {

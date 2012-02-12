@@ -47,12 +47,15 @@
 
        var items = $(rss).find("item");
        var liveItems = items.filter(function(index){
+         var text =  $(this).text();
+         // filter by NG words
+         if(text.indexOf('ネットチケットが必要') > 0) return false;
+
          var startTimeStr = $(this).find('start_time').text();
          var startTime = new Date(startTimeStr);
          var diffMsecFromNow =  new Date().getTime() - startTime.getTime();
-         // console.log('diffMsecFromNow:' + diffMsecFromNow);
          // filter by start time.
-         return 0 < diffMsecFromNow && diffMsecFromNow < (30 * 60 * 1000);
+         return 0 < diffMsecFromNow && diffMsecFromNow < (60 * 60 * 1000);
        });
 
        // console.log('liveItems.length:'+liveItems.length);
@@ -71,12 +74,14 @@
 
      });
    };
-   
+
    /**
     * Show flash player of niconico live by scroll.
     */
    var showFlashPlayer = function(){
-     var targetOffset = $('#flvplayer_container').offset().top;
+     var fc = $('#flvplayer_container');
+     if(fc.length == 0) return;
+     var targetOffset = fc.offset().top;
      targetOffset = targetOffset - 30; // height of menu bar
      $('html,body').animate({scrollTop: targetOffset}, 1000);
    }; 
@@ -92,6 +97,7 @@
        var isActive =  response.isActive;
        // console.log('isActive:' + isActive); 
        var id = getId(document.URL);
+       if(id == null) return;
 
        var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
        $.get(statusURL, {v:id}, function(data){
