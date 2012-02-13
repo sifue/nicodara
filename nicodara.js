@@ -23,9 +23,7 @@
     * @return {boolean} aveilabilty of live watching.
     **/
    var canLiveWatch = function(data){
-     //console.dir(data);
      var endTimeElem = $(data).find('end_time');
-     //console.dir(endTimeElem);
      var endTime = endTimeElem.length === 0 
        ? null 
        : new Date(parseInt(endTimeElem.text(), 10) * 1000);
@@ -45,11 +43,16 @@
      var rssURL = 'http://live.nicovideo.jp/rss';
      $.get(rssURL, function(rss){
 
+       var ngWords = [
+       'ネットチケットが必要',
+       'この番組は有料'
+       ];
        var items = $(rss).find("item").filter(function(index){
          var text =  $(this).text();
          // filter by NG words
-         if(text.indexOf('ネットチケットが必要') > 0) return false;
-         if(text.indexOf('この番組は有料') > 0) return false;
+         for(i = 0; i < ngWords.length ; i++){
+          if(text.indexOf(ngWords[i]) > 0) return false;
+         }
          return true;
        });
 
@@ -61,7 +64,7 @@
          return 0 < diffMsecFromNow && diffMsecFromNow < (60 * 60 * 1000);
        });
 
-       // console.log('liveItems.length:'+liveItems.length);
+       // console.dir(items);
        var nextURL = null;
        if(liveItems.length != 0){ 
          nextURL = liveItems.find('link').first().text();
@@ -72,7 +75,7 @@
        if(nextURL == null || nextURL == document.URL) return;
 
        $('body').animate({"opacity":0}, 1000, function(){
-         location.href = nextURL;
+        location.href = nextURL;
        });
 
      });
@@ -98,14 +101,12 @@
      // get status of activation from background.html
      chrome.extension.sendRequest({field: 'isActive'}, function(response) {
        var isActive =  response.isActive;
-       // console.log('isActive:' + isActive); 
        var id = getId(document.URL);
        if(id == null) return;
 
        var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
        $.get(statusURL, {v:id}, function(data){
          var isLiveWatch = canLiveWatch(data);
-         // console.log('isLiveWatch:' + isLiveWatch);
          if(!isLiveWatch && isActive) {  
            showNextVideo();
          }
