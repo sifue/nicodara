@@ -1,5 +1,7 @@
+<!doctype html>
 <html>
   <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script src="jquery-1.7.1.min.js"></script>
     <script>
       // Activation status of this extension. 
@@ -26,19 +28,12 @@
       // Listen for any changes to the URL of any tab.
       chrome.tabs.onUpdated.addListener(checkForValidUrl);
 
-      chrome.pageAction.onClicked.addListener(function(tab) {
-        isActive = !isActive;
-        updateIcon(tab.id);
-      });
-
       // Message listener for content script
-      chrome.extension.onRequest.addListener(
-      function(request, sender, sendResponse) {
+      chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         if(request.field === 'isActive'){
           sendResponse({isActive: isActive});
         }
-      }
-      );
+      });
     </script>
   </head>
   <body>

@@ -6,7 +6,8 @@
   "page_action" :
   {
     "default_icon" : "icon_off.png",
-    "default_title" : "ニコニコ生放送の公式放送の連続視聴をします。(テレビアイコンの中が黒い時はOFF、白い時はON)"
+    "default_title" : "ニコニコ生放送の公式放送の連続視聴をします。(テレビアイコンの中が黒い時はOFF、白い時はON)",
+    "popup": "popup.html"
   },
   "content_scripts": [
   {
