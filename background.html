@@ -7,6 +7,18 @@
       // Activation status of this extension. 
       var isActive = false;
 
+      // Search type {number}
+      // 'official' : official only
+      // 'keyword' : keyword search
+      // 'channel_id'" : channel id search
+      var searchType = 'official';
+
+      // keyword for search
+      var keyword = '';
+
+      // channel id id for search
+      var channelId = '';
+
       /**
       * Update icon of page action
       * @param {string} tab id
