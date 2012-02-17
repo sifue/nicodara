@@ -127,9 +127,10 @@
        });
      }
 
-    // if channel is not live. jump top id of channels
+    // if channel is not live. jump top id of channels with waiting
      var nextURL = 'http://live.nicovideo.jp/watch/' + ids[0];
-     showNextURL(nextURL);
+     setTimeout(function(){showNextURL(nextURL);}, 1000);
+     
    };
    
    /**
