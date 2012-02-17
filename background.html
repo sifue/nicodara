@@ -4,27 +4,36 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script src="jquery-1.7.1.min.js"></script>
     <script>
-      // status object of this extension
+
+      /** status object of this extension */
       var st = {
         // Activation status of this extension. 
         isActive : false,
-
         // Search type {string}
         // 'official' : official only
         // 'keyword' : keyword search
         // 'channel_id'" : channel id search
         searchType : 'official',
-
         // keyword for search
         keyword : '',
-
         // channel id id for search
         channelId : ''
       };
 
-      var storeOption = function(){};
+      /**
+      * store status object to local strage
+      */
+      var storeStatus = function(){
+        localStorage['st'] = JSON.stringify(st);
+      };
 
-      var restoreOption = function(){};
+      /**
+      * restore status from local strage
+      */
+      var restoreStatus = function(){
+        var stStr = localStorage['st'];
+        if(typeof stStr !== "undefined")  st = JSON.parse(stStr);
+      };
 
       /**
       * Update icon of page action
@@ -38,12 +47,20 @@
         }
       }
 
+      /**
+      * check url and show icon for onUploadlistenr
+      * @param {string} tab id
+      */
       function checkForValidUrl(tabId, changeInfo, tab) {
         if (tab.url.indexOf('http://live.nicovideo.jp') == 0) {
           chrome.pageAction.show(tabId);
           updateIcon(tabId);
         }
       };
+
+      // restore 
+      restoreStatus();
+
       // Listen for any changes to the URL of any tab.
       chrome.tabs.onUpdated.addListener(checkForValidUrl);
 

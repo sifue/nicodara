@@ -77,15 +77,19 @@
         $("input:checkbox[value='is_active']").click(function(){
           bg.st.isActive = $(this).is(':checked');
           chrome.tabs.getSelected(null, function(tab){ bg.updateIcon(tab.id);});
+          bg.storeStatus();
         });
         $("input:radio[name='search_type']").click(function(){
           bg.st.searchType = $(this).val();
+          bg.storeStatus();
         });
         $("input:text[name='keyword']").keydown(function(){
           bg.st.keyword = $(this).val();
+          bg.storeStatus();
         });
         $("input:text[name='channel_id']").keydown(function(){
           bg.st.channelId = $(this).val();
+          bg.storeStatus();
         });
 
       });
