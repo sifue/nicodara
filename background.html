@@ -14,10 +14,12 @@
         // 'keyword' : keyword search
         // 'channel_id'" : channel id search
         searchType : 'official',
+        // NG word of official channel
+        ngWords : 'ネットチケットが必要 この番組は有料',
         // keyword for search
         keyword : '',
-        // channel id id for search
-        channelId : ''
+        // channel ids id for search
+        channelIds : ''
       };
 
       /**
@@ -59,15 +61,15 @@
       };
 
       // restore 
-      restoreStatus();
+      //restoreStatus();
 
       // Listen for any changes to the URL of any tab.
       chrome.tabs.onUpdated.addListener(checkForValidUrl);
 
       // Message listener for content script
       chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-        if(request.field === 'isActive'){
-          sendResponse({isActive: st.isActive});
+        if(request.field === 'st'){
+          sendResponse({st: st});
         }
       });
     </script>

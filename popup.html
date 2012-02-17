@@ -48,11 +48,15 @@
       #search_type {
         line-height: 1.6;
       }
+      #ng_words {
+        margin-left: 16px;
+        width: 160px;
+      }
       #keyword {
         margin-left: 16px;
         width: 160px;
       }
-      #channel_id {
+      #channel_ids {
         margin-left: 16px;
         width: 160px;
       }
@@ -61,6 +65,7 @@
       }  
     </style>
     <script src="jquery-1.7.1.min.js"></script>
+    <script src="jquery.textchange.min.js"></script>
     <script>
       $(document).ready(function(){
         var bg = chrome.extension.getBackgroundPage();
@@ -70,8 +75,9 @@
         $("input:radio[name='search_type']")
         .filter(function(){ return ($(this).val() === bg.st.searchType)})
         .attr("checked", true);
+        $("input:text[name='ng_words']").val(bg.st.ngWords);
         $("input:text[name='keyword']").val(bg.st.keyword);
-        $("input:text[name='channel_id']").val(bg.st.channelId);
+        $("input:text[name='channel_ids']").val(bg.st.channelIds);
 
         // add listener
         $("input:checkbox[value='is_active']").click(function(){
@@ -83,12 +89,16 @@
           bg.st.searchType = $(this).val();
           bg.storeStatus();
         });
-        $("input:text[name='keyword']").keydown(function(){
+        $("input:text[name='ng_words']").bind('textchange', function(){
+          bg.st.ngWords = $(this).val();
+          bg.storeStatus();
+        });
+        $("input:text[name='keyword']").bind('textchange', function(){
           bg.st.keyword = $(this).val();
           bg.storeStatus();
         });
-        $("input:text[name='channel_id']").keydown(function(){
-          bg.st.channelId = $(this).val();
+        $("input:text[name='channel_ids']").bind('textchange', function(){
+          bg.st.channelIds = $(this).val();
           bg.storeStatus();
         });
 
@@ -98,17 +108,18 @@
   <body>
     <div id="main">
       <div id="is_active_wrap" class="wrap_1">
-        <input id="is_active" type="checkbox" value="is_active" /> 連続視聴する
+        <input id="is_active" type="checkbox" value="is_active" /> 生放送を連続視聴する
       </div>
       <div id="search_type" class="wrap_2">
         <input id="search_type" type="radio" name="search_type" value="official">
-        無料の公式放送</br>
+        NGワードを含まない公式放送:</br>
+        <input id="ng_words" type="text" name="ng_words" /></br>
         <input id="search_type" type="radio" name="search_type" value="keyword">
-        キーワードで検索:</br>
+        キーワードで限定以外を検索:</br>
         <input id="keyword" type="text" name="keyword" /></br>
         <input id="search_type" type="radio" name="search_type" value="channel_id">
-        番組ID(空白区切りで複数可):</br>
-        <input id="channel_id" type="text" name="channel_id" />
+        番組IDで指定(複数可):</br>
+        <input id="channel_ids" type="text" name="channel_ids" />
       </div>
     </div>
   </body>
