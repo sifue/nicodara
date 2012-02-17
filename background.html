@@ -4,27 +4,34 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script src="jquery-1.7.1.min.js"></script>
     <script>
-      // Activation status of this extension. 
-      var isActive = false;
+      // status object of this extension
+      var st = {
+        // Activation status of this extension. 
+        isActive : false,
 
-      // Search type {number}
-      // 'official' : official only
-      // 'keyword' : keyword search
-      // 'channel_id'" : channel id search
-      var searchType = 'official';
+        // Search type {string}
+        // 'official' : official only
+        // 'keyword' : keyword search
+        // 'channel_id'" : channel id search
+        searchType : 'official',
 
-      // keyword for search
-      var keyword = '';
+        // keyword for search
+        keyword : '',
 
-      // channel id id for search
-      var channelId = '';
+        // channel id id for search
+        channelId : ''
+      };
+
+      var storeOption = function(){};
+
+      var restoreOption = function(){};
 
       /**
       * Update icon of page action
       * @param {string} tab id
       */
       var updateIcon = function(id){
-        if(isActive){
+        if(st.isActive){
           chrome.pageAction.setIcon({tabId : id, path : "icon_on.png"});
           }else{
           chrome.pageAction.setIcon({tabId : id, path :"icon_off.png"});
@@ -43,7 +50,7 @@
       // Message listener for content script
       chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         if(request.field === 'isActive'){
-          sendResponse({isActive: isActive});
+          sendResponse({isActive: st.isActive});
         }
       });
     </script>

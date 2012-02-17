@@ -66,26 +66,26 @@
         var bg = chrome.extension.getBackgroundPage();
 
         // initialize
-        $("input:checkbox[value='is_active']").attr("checked", bg.isActive);
+        $("input:checkbox[value='is_active']").attr("checked", bg.st.isActive);
         $("input:radio[name='search_type']")
-        .filter(function(){ return ($(this).val() === bg.searchType)})
+        .filter(function(){ return ($(this).val() === bg.st.searchType)})
         .attr("checked", true);
-        $("input:text[name='keyword']").val(bg.keyword);
-        $("input:text[name='channel_id']").val(bg.channelId);
+        $("input:text[name='keyword']").val(bg.st.keyword);
+        $("input:text[name='channel_id']").val(bg.st.channelId);
 
         // add listener
         $("input:checkbox[value='is_active']").click(function(){
-          bg.isActive = $(this).is(':checked');
+          bg.st.isActive = $(this).is(':checked');
           chrome.tabs.getSelected(null, function(tab){ bg.updateIcon(tab.id);});
         });
         $("input:radio[name='search_type']").click(function(){
-          bg.searchType = $(this).val();
+          bg.st.searchType = $(this).val();
         });
         $("input:text[name='keyword']").keydown(function(){
-          bg.keyword = $(this).val();
+          bg.st.keyword = $(this).val();
         });
         $("input:text[name='channel_id']").keydown(function(){
-          bg.channelId = $(this).val();
+          bg.st.channelId = $(this).val();
         });
 
       });
