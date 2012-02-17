@@ -107,7 +107,29 @@
     * @param {object} status object of background.html
     */
    var showNextChannelIdSelected = function(st){
+     var ids = st.channelIds.split(' ');
+     // if first id is null char or not id string, return
+     if(ids[0] === ''
+         || ids[0].match(/[a-z]+[0-9]+/).length === 0) return;
 
+     for(i = 0; i < ids.length ; i++){
+       var id = ids[i];
+       var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
+       $.get(statusURL, {v:id}, function(data){
+         var isLiveWatch = isLiveWatchNow(data);
+        
+         // If live is able, jump. 
+         if(isLiveWatch){
+           var nextURL = 'http://live.nicovideo.jp/watch/' + id;
+           showNextURL(nextURL);
+           return;
+         }
+       });
+     }
+
+    // if channel is not live. jump top id of channels
+     var nextURL = 'http://live.nicovideo.jp/watch/' + ids[0];
+     showNextURL(nextURL);
    };
    
    /**
