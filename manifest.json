@@ -12,7 +12,7 @@
   "content_scripts": [
   {
     "matches": ["http://live.nicovideo.jp/*"],
-    "js": ["jquery-1.7.1.min.js", "nicodara.js"]
+    "js": ["jquery-1.7.2.min.js", "nicodara.js"]
   }
   ],
   "permissions" : [
