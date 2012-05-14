@@ -12,14 +12,15 @@
         // Search type {string}
         // 'official' : official only
         // 'keyword' : keyword search
-        // 'channel_id'" : channel id search
+        // 'channel_id' : channel id search
+        // 'current_community_id' : current community id
         searchType : 'official',
         // NG word of official channel
         ngWords : 'ネットチケットが必要 この番組は有料',
         // keyword for search
         keyword : '',
-        // channel ids id for search
-        channelIds : 'lv77561342 lv80858759'
+        // channel ids, community id, video id for search
+        channelIds : 'lv77561342 co1461366'
       };
 
       /**
@@ -60,7 +61,7 @@
         }
       };
 
-      // restore 
+      // restore
       restoreStatus();
 
       // Listen for any changes to the URL of any tab.

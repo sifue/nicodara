@@ -7,7 +7,7 @@
 (function()
  {
    /**
-    * get niconico live id 
+    * get niconico live id
     * @param {string} URL of niconico live
     * @return {string} ID of niconico live
     */
@@ -15,6 +15,35 @@
      url.match(/^http:\/\/live\.nicovideo\.jp\/watch\/([a-z]+[0-9]+)($|\?.*$)/);
      var id = RegExp.$1;
      return id;
+   };
+
+   /**
+    * get community id
+    * @param {string} ID of video or community
+    * @return {string} ID of community
+    */
+   var getComunityId = function(id){
+     if(id.indexOf('co') > -1){ // if community id
+       community_id = id;
+     } else {
+       var channel_url =  $('.commu_name:first').attr("href"); // ZERO
+
+       if(!channel_url){
+         channel_url =  $('#title a:first').attr('href'); // Harajyuku
+       }
+
+       if(!channel_url){
+         channel_url =  $('.smn a:first').attr('href'); // not live
+       }
+
+       if(!channel_url){
+         return null; // not found
+       }
+
+       channel_url.match(/^http:\/\/com\.nicovideo\.jp\/community\/([a-z]+[0-9]+)($|\?.*$)/);
+       community_id = RegExp.$1;
+     }
+     return community_id;
    };
 
    /**
@@ -30,16 +59,16 @@
 
    /**
     * get abeilability of live watchning of this video.
-    * @param {Document} xml of http://live.nicovideo.jp/api/getplayerstatus 
+    * @param {Document} xml of http://live.nicovideo.jp/api/getplayerstatus
     * @return {boolean} aveilabilty of live watching.
     **/
    var isLiveWatchNow = function(data){
      var endTimeElem = $(data).find('end_time');
-     var endTime = endTimeElem.length === 0 
-       ? null 
+     var endTime = endTimeElem.length === 0
+       ? null
        : new Date(parseInt(endTimeElem.text(), 10) * 1000);
      var nowTime = new Date();
-     if(endTime === null 
+     if(endTime === null
          || endTime.getTime() < nowTime.getTime()){
            return false;
          }else{
@@ -91,7 +120,7 @@
    var showNextKeywordSearched = function(st){
      var encodedKeyword = encodeURI(st.keyword);
      var searchURL = 'http://live.nicovideo.jp/search/?orig_filter=+%3Ahidecomonly%3A&sort=point&date=&keyword='
-       + encodedKeyword + 
+       + encodedKeyword +
       '&submit.x=0&submit.y=0';
 
      $.get(searchURL, function(data){
@@ -117,8 +146,8 @@
        var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
        $.get(statusURL, {v:id}, function(data){
          var isLiveWatch = isLiveWatchNow(data);
-        
-         // If live is able, jump. 
+
+         // If live is able, jump.
          if(isLiveWatch){
            var nextURL = 'http://live.nicovideo.jp/watch/' + id;
            showNextURL(nextURL);
@@ -130,9 +159,31 @@
     // if channel is not live. jump top id of channels with waiting
      var nextURL = 'http://live.nicovideo.jp/watch/' + ids[0];
      setTimeout(function(){showNextURL(nextURL);}, 1000);
-     
+
    };
-   
+
+   /**
+    * show next current community id video .
+    * @param {string} ID of community
+    */
+   var showNextCurrentCommunityId = function(id){
+     var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
+     $.get(statusURL, {v:id}, function(data){
+       var isLiveWatch = isLiveWatchNow(data);
+
+       // If live is able, jump.
+       if(isLiveWatch){
+         var nextURL = 'http://live.nicovideo.jp/watch/' + id;
+         showNextURL(nextURL);
+         return;
+       }
+     });
+
+     // if channel is not live. jump top id of channels with waiting
+     var nextURL = 'http://live.nicovideo.jp/watch/' + id;
+     setTimeout(function(){showNextURL(nextURL);}, 1000);
+   };
+
    /**
     * show next url with animation.
     * if next url is same or same channel id, don't show.
@@ -182,13 +233,16 @@
          isLiveWatchLast = isLiveWatch;
 
          // show next channel
-         if(!isLiveWatch && st.isActive) {  
+         if(!isLiveWatch && st.isActive) {
            if(st.searchType === 'official'){
              showNextOfficial(st);
            }else if (st.searchType === 'keyword'){
              showNextKeywordSearched(st);
            }else if (st.searchType === 'channel_id'){
              showNextChannelIdSelected(st);
+           }else if (st.searchType === 'current_community_id'){
+             var community_id  = getComunityId(id);
+             showNextCurrentCommunityId(community_id);
            }
          }
 
