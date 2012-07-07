@@ -64,12 +64,9 @@
     **/
    var isLiveWatchNow = function(data){
      var endTimeElem = $(data).find('end_time');
-     var endTime = endTimeElem.length === 0
-       ? null
-       : new Date(parseInt(endTimeElem.text(), 10) * 1000);
+     var endTime = (endTimeElem.length === 0) ? null : new Date(parseInt(endTimeElem.text(), 10) * 1000);
      var nowTime = new Date();
-     if(endTime === null
-         || endTime.getTime() < nowTime.getTime()){
+     if(endTime === null || endTime.getTime() < nowTime.getTime()){
            return false;
          }else{
            return true;
@@ -103,7 +100,7 @@
        });
 
        var nextURL = null;
-       if(liveItems.length != 0){ 
+       if(liveItems.length !== 0){
          nextURL = liveItems.find('link').first().text();
        }else{
          nextURL = items.find('link').first().text();
@@ -119,9 +116,7 @@
     */
    var showNextKeywordSearched = function(st){
      var encodedKeyword = encodeURI(st.keyword);
-     var searchURL = 'http://live.nicovideo.jp/search/?orig_filter=+%3Ahidecomonly%3A&sort=point&date=&keyword='
-       + encodedKeyword +
-      '&submit.x=0&submit.y=0';
+     var searchURL = 'http://live.nicovideo.jp/search/?orig_filter=+%3Ahidecomonly%3A&sort=point&date=&keyword=' + encodedKeyword + '&submit.x=0&submit.y=0';
 
      $.get(searchURL, function(data){
       var firstItem = $(data).find('.search_stream_title a').first();
@@ -138,22 +133,21 @@
    var showNextChannelIdSelected = function(st){
      var ids = st.channelIds.split(' ');
      // if first id is null char or not id string, return
-     if(ids[0] === ''
-         || ids[0].match(/[a-z]+[0-9]+/).length === 0) return;
+     if(ids[0] === '' || ids[0].match(/[a-z]+[0-9]+/).length === 0) return;
 
-     for(i = 0; i < ids.length ; i++){
-       var id = ids[i];
-       var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
-       $.get(statusURL, {v:id}, function(data){
+     var jumpToNextURL = function(data){
          var isLiveWatch = isLiveWatchNow(data);
-
          // If live is able, jump.
          if(isLiveWatch){
            var nextURL = 'http://live.nicovideo.jp/watch/' + id;
            showNextURL(nextURL);
            return;
          }
-       });
+     };
+     for(i = 0; i < ids.length ; i++){
+       var id = ids[i];
+       var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
+       $.get(statusURL, {v:id, chrome_ext_name:'nicodara'}, jumpToNextURL);
      }
 
     // if channel is not live. jump top id of channels with waiting
@@ -168,7 +162,7 @@
     */
    var showNextCurrentCommunityId = function(id){
      var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
-     $.get(statusURL, {v:id}, function(data){
+     $.get(statusURL, {v:id, chrome_ext_name:'nicodara'}, function(data){
        var isLiveWatch = isLiveWatchNow(data);
 
        // If live is able, jump.
@@ -191,9 +185,7 @@
     */
    var showNextURL = function(nextURL){
        // console.log('nextURL:'+ nextURL);
-       if(nextURL === null 
-           || nextURL === document.URL
-           || getIdFromSearch(nextURL) === getId(document.URL)) return;
+       if(nextURL === null || nextURL === document.URL || getIdFromSearch(nextURL) === getId(document.URL)) return;
 
        $('body').animate({"opacity":0}, 1000, function(){
          location.href = nextURL;
@@ -202,14 +194,16 @@
 
    /**
     * Show flash player of niconico live by scroll.
+    * @param {object} status object of this extention.
     */
-   var showFlashPlayer = function(){
+   var showFlashPlayer = function(st){
      var fc = $('#flvplayer_container');
-     if(fc.length == 0) return;
+     if(fc.length === 0) return;
+     if(!st.isScroll) return;
      var targetOffset = fc.offset().top;
      targetOffset = targetOffset - 30; // height of menu bar
      $('html,body').animate({scrollTop: targetOffset}, 1000);
-   }; 
+   };
 
    var isFirstObserve = true;
    var isLiveWatchLast = true;
@@ -225,7 +219,7 @@
        if(id === null || id === '') return;
 
        var statusURL = 'http://live.nicovideo.jp/api/getplayerstatus';
-       $.get(statusURL, {v:id}, function(data){
+       $.get(statusURL, {v:id, chrome_ext_name:'nicodara'}, function(data){
          var isLiveWatch = isLiveWatchNow(data);
 
          // If change "not live" to "live", execute reload.
@@ -248,14 +242,13 @@
 
          // if first observe, show flashplayer
          if(isFirstObserve && st.isActive){
-           showFlashPlayer();
+           showFlashPlayer(st);
            isFirstObserve = false;
          }
-         setTimeout(observe,5000); // wait and retry
        });
      });
-   }
+   };
 
-   /////// start main
-   observe();
+   /////// start main wait 5000msec
+   setInterval(observe, 5000);
  })();

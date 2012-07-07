@@ -72,6 +72,7 @@
 
         // initialize
         $("input:checkbox[value='is_active']").attr("checked", bg.st.isActive);
+        $("input:checkbox[value='is_scroll']").attr("checked", bg.st.isScroll);
         $("input:radio[name='search_type']")
         .filter(function(){ return ($(this).val() === bg.st.searchType)})
         .attr("checked", true);
@@ -82,6 +83,11 @@
         // add listener
         $("input:checkbox[value='is_active']").click(function(){
           bg.st.isActive = $(this).is(':checked');
+          chrome.tabs.getSelected(null, function(tab){ bg.updateIcon(tab.id);});
+          bg.storeStatus();
+        });
+        $("input:checkbox[value='is_scroll']").click(function(){
+          bg.st.isScroll = $(this).is(':checked');
           chrome.tabs.getSelected(null, function(tab){ bg.updateIcon(tab.id);});
           bg.storeStatus();
         });
@@ -108,7 +114,8 @@
   <body>
     <div id="main">
       <div id="is_active_wrap" class="wrap_1">
-        <input id="is_active" type="checkbox" value="is_active" /> 生放送を連続視聴する
+        <input id="is_active" type="checkbox" value="is_active" /> 生放送を連続視聴する</br>
+        <input id="is_scroll" type="checkbox" value="is_scroll" /> 視聴開始時にスクロールする
       </div>
       <div id="search_type" class="wrap_2">
         <input id="search_type" type="radio" name="search_type" value="official">
